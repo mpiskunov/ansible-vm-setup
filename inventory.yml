@@ -1,0 +1,4 @@
+droplets:
+  hosts:
+    rpgamertools.com:
+      ansible_host: 174.138.82.100

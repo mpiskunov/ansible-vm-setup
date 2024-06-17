@@ -1,0 +1,6 @@
+---
+# this will download python3 if it doesn't exist or has changed.
+- name: Install Python3
+  apt:
+    name: python3
+    state: present

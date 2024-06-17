@@ -1,0 +1,10 @@
+---
+- name: Main Task
+  hosts: droplets
+  remote_user: ansible
+  become: true
+  roles:
+    - base
+    - docker
+    - namecheap-dns
+    - caddy

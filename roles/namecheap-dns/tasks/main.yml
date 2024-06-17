@@ -1,0 +1,9 @@
+---
+
+- name: Include secret vars
+  ansible.builtin.include_vars:
+    file: vars/secret_vars.yml
+    name: base_vars
+
+- name: DNS Droplet Tasks
+  include_tasks: dns.yml

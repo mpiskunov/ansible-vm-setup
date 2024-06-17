@@ -1,0 +1,32 @@
+---
+
+- name: Check namecheap DNS host records
+  ansible.builtin.uri:
+    url: https://api.namecheap.com/xml.response?ApiUser={{base_vars.apiUser}}&ApiKey={{base_vars.apiKey}}&UserName={{base_vars.apiUser}}&Command=namecheap.domains.dns.getHosts&ClientIp={{base_vars.clientIp}}&SLD=rpgamertools&TLD=com
+    return_content: true
+  register: namecheap_content
+
+# - name: debug namecheap_content
+#   ansible.builtin.debug:
+#     msg: "{{ namecheap_content }}"
+
+- name: Convert given XML to native python dictionary
+  ansible.builtin.set_fact:
+    url_content: "{{ namecheap_content.content | ansible.utils.from_xml }}"
+
+# - debug:
+#     msg: "{{ url_content }}"
+
+# - name: testing
+#   ansible.builtin.debug:
+#     msg: "{{ hostvars[inventory_hostname]['ansible_host'] }}"
+
+# this will only work with static public DNS, like a Digital Ocean droplet.
+- name: Add host to droplet
+  when: > 
+    url_content['ApiResponse']['CommandResponse']['DomainDNSGetHostsResult']['host'] is not defined or
+    url_content['ApiResponse']['CommandResponse']['DomainDNSGetHostsResult']['host'] is defined and
+    url_content['ApiResponse']['CommandResponse']['DomainDNSGetHostsResult']['host']['@Address'] != hostvars[inventory_hostname]['ansible_host']
+  ansible.builtin.uri:
+    url: https://api.namecheap.com/xml.response?apiuser={{base_vars.apiUser}}&apikey={{base_vars.apiKey}}&username={{base_vars.apiUser}}&Command=namecheap.domains.dns.setHosts&ClientIp={{base_vars.clientIp}}&SLD=rpgamertools&TLD=com&HostName1=@&RecordType1=A&Address1={{ hostvars[inventory_hostname]['ansible_host'] }}&TTL1=1800
+    

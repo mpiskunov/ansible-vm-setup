@@ -1,0 +1,37 @@
+---
+
+- name: Install UFW
+  apt:
+    name: ufw
+    state: present
+
+- name: Check if 443/80 is open
+  shell: ufw show added | grep "ufw allow 80,443/tcp"
+  register: https_rule_exists
+  ignore_errors: true
+
+# - name: debug https_rule_exists
+#   ansible.builtin.debug:
+#     msg: "{{ https_rule_exists }}"
+
+- name: ufw allow http/s
+  when: https_rule_exists is failed
+  ansible.builtin.command: ufw allow proto tcp from any to any port 80,443
+
+# we can accidentally get locked out if not for this check :) ufw allow OpenSSH
+- name: Check if 22 is open
+  shell: ufw show added | grep "ufw allow OpenSSH"
+  register: ssh_rule_exists
+  ignore_errors: true
+
+# - name: debug ssh_rule_exists
+#   ansible.builtin.debug:
+#     msg: "{{ ssh_rule_exists }}"
+
+- name: ufw allow OpenSSH
+  when: ssh_rule_exists is failed
+  ansible.builtin.command: ufw allow OpenSSH
+
+# enables/flushs ufw
+- name: Enable UFW --force
+  shell: ufw --force enable
