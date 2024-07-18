@@ -14,12 +14,12 @@
   ansible.builtin.set_fact:
     url_content: "{{ namecheap_content.content | ansible.utils.from_xml }}"
 
-# - debug:
-#     msg: "{{ url_content }}"
+- debug:
+    msg: "{{ url_content }}"
 
-# - name: testing
-#   ansible.builtin.debug:
-#     msg: "{{ hostvars[inventory_hostname]['ansible_host'] }}"
+- name: testing
+  ansible.builtin.debug:
+    msg: "{{ hostvars[inventory_hostname]['ansible_host'] }}"
 
 # this will only work with static public DNS, like a Digital Ocean droplet.
 - name: Add host to droplet

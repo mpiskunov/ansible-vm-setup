@@ -2,3 +2,5 @@ droplets:
   hosts:
     rpgamertools.com:
       ansible_host: 174.138.82.100
+    cronescottagecollective.com:
+      ansible_host: 159.65.234.65
